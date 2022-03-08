@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-e9nthf!#5g3ktsqf@mxuc4$ecbo(wnq-o&_kzhwp)f4^@dctfw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['84.252.142.106', 'backend', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -43,9 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'rest_framework.authtoken',
-    'django_filters',
-    'colorfield',
-    
+    'django_filters'
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -113,12 +111,8 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'foodgram',
-        'USER': 'foodgram',
-        'PASSWORD': 'foodgram',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -171,7 +165,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
