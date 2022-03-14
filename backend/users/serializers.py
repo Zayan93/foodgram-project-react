@@ -38,13 +38,6 @@ class UserFollowSerializer(serializers.ModelSerializer):
             )
         return data
 
-    def to_representation(self, instance):
-        request = self.context.get('request')
-        return FollowListSerializer(
-            instance.following,
-            context={'request': request}
-        ).data
-
 
 class FollowListSerializer(serializers.ModelSerializer):
     recipes = serializers.SerializerMethodField()

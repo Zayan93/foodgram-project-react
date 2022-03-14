@@ -18,7 +18,7 @@ from .serializers import (FavoriteSerializer, RecipeFullSerializer,
 
 class IngredientView(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
     queryset = Ingredient.objects.all()
     filter_backends = [DjangoFilterBackend, ]
     filter_class = IngredientFilter
@@ -26,11 +26,11 @@ class IngredientView(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsOwnerOrReadOnly, ]
+    permission_classes = [IsOwnerOrReadOnly]
     queryset = Recipe.objects.all()
     pagination_class = PageNumberPagination
     pagination_class.page_size = 6
-    filter_backends = [DjangoFilterBackend, ]
+    filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
@@ -42,10 +42,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context.update({'request': self.request})
         return context
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class FavoriteApiView(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, favorite_id):
         user = request.user
@@ -71,7 +74,7 @@ class FavoriteApiView(APIView):
 
 
 class ShoppingView(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, recipe_id):
         user = request.user

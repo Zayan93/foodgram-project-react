@@ -6,10 +6,6 @@ from .models import CustomUser, Follow
 
 
 class CustomUserAdmin(UserAdmin):
-    '''
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
-    '''
     model = CustomUser
     list_display = ('id', 'username', 'first_name', 'last_name',
                     'email', 'password', 'is_staff', 'is_active',)

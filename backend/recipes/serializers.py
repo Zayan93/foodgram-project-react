@@ -45,7 +45,7 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    ingredients = serializers.SerializerMethodField()
+    ingredients = IngredientAmountSerializer(source='recipes_ingredients_list', many=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
@@ -111,8 +111,8 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
-        recipe.save()
+        recipe = Recipe.objects.create(**validated_data)
+        super().create(validated_data)
         recipe.tags.set(tags_data)
         self.create_bulk(recipe, ingredients_data)
         return recipe
@@ -148,15 +148,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             )
         return data
 
-    def to_representation(self, instance):
-        data = RecipeSerializer(
-            instance,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
-        return data
-
 
 class FavoriteSerializer(serializers.ModelSerializer):
 
@@ -171,13 +162,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def to_representation(self, instance):
-        requset = self.context.get('request')
-        return RecipeImageSerializer(
-            instance.recipe,
-            context={'request': requset}
-        ).data
-
 
 class ShoppingListSerializer(FavoriteSerializer):
     class Meta(FavoriteSerializer.Meta):
@@ -190,10 +174,3 @@ class ShoppingListSerializer(FavoriteSerializer):
                 message='Рецепт уже добавлен в список покупок'
             )
         ]
-
-    def to_representation(self, instance):
-        requset = self.context.get('request')
-        return RecipeImageSerializer(
-            instance.recipe,
-            context={'request': requset}
-        ).data
