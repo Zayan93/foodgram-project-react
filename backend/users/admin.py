@@ -2,11 +2,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser, Follow
+from .models import User, Follow
 
 
 class CustomUserAdmin(UserAdmin):
-    model = CustomUser
+    model = User
     list_display = ('id', 'username', 'first_name', 'last_name',
                     'email', 'password', 'is_staff', 'is_active',)
     ordering = ('email',)
@@ -14,5 +14,5 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Follow)

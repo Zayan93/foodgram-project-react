@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import UniqueConstraint
 
 
-class CustomUser(AbstractUser):
+class User(AbstractUser):
     email = models.EmailField('email', null=False, unique=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
@@ -16,7 +16,6 @@ class CustomUser(AbstractUser):
         return f'Пользователь {self.email}'
 
 
-User = CustomUser
 
 
 class Follow(models.Model):

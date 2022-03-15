@@ -40,6 +40,11 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ('amount', 'id')
+    
+    def validate_amount(amount):
+        if amount <= 0:
+            raise serializers.ValidationError('Число игредиентов должно быть больше 0')
+        return amount
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -108,11 +113,9 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         ) for ingredient in ingredients_data])
 
     def create(self, validated_data):
-        request = self.context.get('request')
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(**validated_data)
-        super().create(validated_data)
+        recipe = super().create(validated_data)
         recipe.tags.set(tags_data)
         self.create_bulk(recipe, ingredients_data)
         return recipe
@@ -122,23 +125,9 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         IngredientAmount.objects.filter(recipe=instance).delete()
         self.create_bulk(instance, ingredients_data)
-        instance.name = validated_data.pop('name')
-        instance.text = validated_data.pop('text')
-        instance.cooking_time = validated_data.pop('cooking_time')
-        if validated_data.get('image') is not None:
-            instance.image = validated_data.pop('image')
-        instance.save()
+        instance = super().update(instance, validated_data)
         instance.tags.set(tags_data)
         return instance
-
-    def validate(self, data):
-        ingredients = self.initial_data.get('ingredients')
-        for ingredient in ingredients:
-            if int(ingredient['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'ingredients': ('Число игредиентов должно быть больше 0')
-                })
-        return data
 
     def validate_cooking_time(self, data):
         cooking_time = self.initial_data.get('cooking_time')

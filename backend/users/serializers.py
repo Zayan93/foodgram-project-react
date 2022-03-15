@@ -56,8 +56,6 @@ class FollowListSerializer(serializers.ModelSerializer):
         other_user = user.following.all()
         if user.is_anonymous:
             return False
-        if other_user.count() == 0:
-            return False
         if Follow.objects.filter(user=user, following=current_user).exists():
             return True
         return False
