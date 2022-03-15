@@ -1,4 +1,3 @@
-from django.db import transaction
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -40,17 +39,21 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ('amount', 'id')
-    
+
     def validate_amount(amount):
         if amount <= 0:
-            raise serializers.ValidationError('Число игредиентов должно быть больше 0')
+            raise serializers.ValidationError(
+                'Число игредиентов должно быть больше 0'
+            )
         return amount
 
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
-    ingredients = IngredientAmountSerializer(source='recipes_ingredients_list', many=True)
+    ingredients = IngredientAmountSerializer(
+        source='recipes_ingredients_list', many=True
+    )
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 

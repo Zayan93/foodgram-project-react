@@ -16,8 +16,6 @@ class User(AbstractUser):
         return f'Пользователь {self.email}'
 
 
-
-
 class Follow(models.Model):
     following = models.ForeignKey(User, on_delete=models.CASCADE,
                                   verbose_name='Подписка',

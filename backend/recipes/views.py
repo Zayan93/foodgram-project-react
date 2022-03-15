@@ -1,5 +1,4 @@
-import datetime
-from django.shortcuts import HttpResponse, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
@@ -8,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .filters import RecipeFilter, IngredientFilter
-from .models import (Favorite, IngredientAmount, Ingredient,
+from .models import (Favorite, Ingredient,
                      Recipe, ShoppingList)
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (FavoriteSerializer, RecipeFullSerializer,
@@ -42,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         context.update({'request': self.request})
         return context
-    
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
