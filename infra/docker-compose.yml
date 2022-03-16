@@ -10,14 +10,14 @@ services:
       - ./.env
 
   frontend:
-    image: zayan93/frontend:latest
+    image: zayan93/frontend_v1:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
       - db
 
   backend:
-    image: zayan93/backend:latest
+    image: zayan93/backend_v1:latest
     restart: always
     volumes:
       - static_value:/code/static/

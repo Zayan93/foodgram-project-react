@@ -44,7 +44,7 @@ jobs:
             with:
               push: true
               context: ./backend/
-              tags: ${{ secrets.DOCKER_USERNAME }}/backend:latest
+              tags: ${{ secrets.DOCKER_USERNAME }}/backend_v1:latest
     deploy:
       runs-on: ubuntu-latest
       needs: build_and_push_to_docker_hub
@@ -59,8 +59,8 @@ jobs:
                passphrase: ${{ secrets.PASSPHRASE }}
                stack_file_name: docker-compose.yaml
                script: |
-                  sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
-                  sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
+                  sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend_v1:latest
+                  sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend_v1:latest
                   sudo docker-compose stop
                   sudo docker-compose rm backend
                   touch .env
