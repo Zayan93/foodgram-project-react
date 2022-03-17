@@ -3,8 +3,13 @@ services:
 
   db:
     image: postgres:13.0-alpine
+    environment:
+            - DB_NAME=postgres
+            - DB_PORT=5432
+            - POSTGRES_USER=posrtgres
+            - POSTGRES_PASSWORD=postgres
     volumes:
-      - /var/lib/postgresql/data/
+            - postgres_data:/var/lib/postgresql/data/
     restart: always
     env_file:
       - ./.env
