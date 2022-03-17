@@ -60,7 +60,6 @@ jobs:
                stack_file_name: docker-compose.yaml
                script: |
                   sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend_v1:latest
-                  sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend_v1:latest
                   sudo docker-compose stop
                   sudo docker-compose rm backend
                   touch .env
