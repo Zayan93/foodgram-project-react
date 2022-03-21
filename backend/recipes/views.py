@@ -1,4 +1,5 @@
-from django.shortcuts import get_object_or_404
+import datetime
+from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
@@ -7,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .filters import RecipeFilter, IngredientFilter
-from .models import (Favorite, Ingredient,
+from .models import (Favorite, IngredientAmount, Ingredient,
                      Recipe, ShoppingList)
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (FavoriteSerializer, RecipeFullSerializer,
@@ -17,19 +18,19 @@ from .serializers import (FavoriteSerializer, RecipeFullSerializer,
 
 class IngredientView(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
     queryset = Ingredient.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, ]
     filter_class = IngredientFilter
     pagination_class = None
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, ]
     queryset = Recipe.objects.all()
     pagination_class = PageNumberPagination
     pagination_class.page_size = 6
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, ]
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
@@ -42,12 +43,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         context.update({'request': self.request})
         return context
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
 
 class FavoriteApiView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request, favorite_id):
         user = request.user
@@ -73,7 +71,7 @@ class FavoriteApiView(APIView):
 
 
 class ShoppingView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ]
 
     def get(self, request, recipe_id):
         user = request.user
@@ -97,3 +95,32 @@ class ShoppingView(APIView):
         recipe = get_object_or_404(Recipe, id=recipe_id)
         ShoppingList.objects.filter(user=user, recipe=recipe).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DownloadShoppingCart(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+        shopping_list = {}
+        ingredients = IngredientAmount.objects.filter(
+            recipe__purchases__user=request.user
+        )
+        for ingredient in ingredients:
+            amount = ingredient.amount
+            name = ingredient.ingredient.name
+            measurement_unit = ingredient.ingredient.measurement_unit
+            if name not in shopping_list:
+                shopping_list[name] = {
+                    'measurement_unit': measurement_unit,
+                    'amount': amount
+                }
+            else:
+                shopping_list[name]['amount'] += amount
+        main_list = ([f"* {item}:{value['amount']}"
+                      f"{value['measurement_unit']}\n"
+                      for item, value in shopping_list.items()])
+        today = datetime.date.today()
+        main_list.append(f'\n From FoodGram with love, {today.year}')
+        response = HttpResponse(main_list, 'Content-Type: text/plain')
+        response['Content-Disposition'] = 'attachment; filename="BuyList.txt"'
+        return response

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets, generics
 from rest_framework.decorators import action
@@ -7,10 +8,12 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import User, Follow
+from .models import CustomUser, Follow
 from .serializers import (
     FollowListSerializer, UserFollowSerializer, CurrentUserSerializer
 )
+
+User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -49,13 +52,13 @@ class FollowApiView(APIView):
 
     def delete(self, request, following_id):
         user = request.user
-        following = get_object_or_404(User, id=following_id)
+        following = get_object_or_404(CustomUser, id=following_id)
         Follow.objects.filter(user=user, following=following).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class FollowListApiView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = FollowListSerializer
 
     def get_serializer_context(self):
@@ -65,4 +68,4 @@ class FollowListApiView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return User.objects.filter(following__user=user)
+        return CustomUser.objects.filter(following__user=user)

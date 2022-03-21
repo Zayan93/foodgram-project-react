@@ -3,7 +3,9 @@ from django.db import models
 from django.db.models import UniqueConstraint
 
 from tags.models import Tag
-from users.models import User
+from users.models import CustomUser
+
+User = CustomUser
 
 
 class Ingredient(models.Model):

@@ -8,5 +8,5 @@ from .serializers import TagSerializer
 class TagView(viewsets.ReadOnlyModelViewSet):
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
     pagination_class = None
