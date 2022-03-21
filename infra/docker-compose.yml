@@ -12,13 +12,6 @@ services:
         restart: always
         env_file:
             - ./.env
-    
-    frontend:
-        image: zayan93/infra_frontend_1:latest
-        volumes:
-            - ../frontend/:/app/result_build/
-        depends_on:
-            - db
 
     backend:
         image: zayan93/infra_backend_1:latest
@@ -30,6 +23,13 @@ services:
             - db
         env_file:
             - ./.env
+    
+    frontend:
+        image: zayan93/infra_frontend_1:latest
+        volumes:
+            - ../frontend/:/app/result_build/
+        depends_on:
+            - db
     
     nginx:
         image: nginx:1.19.3
