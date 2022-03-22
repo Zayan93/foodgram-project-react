@@ -28,7 +28,7 @@ SECRET_KEY = 'cni(48#_*bkk2c57w=^k=bstna01859hz3p(xj@2ioie1msc('
 DEBUG = os.environ.get('DEBUG', default=True),
 
 # Посмотрите пожалуйста файл README.
-ALLOWED_HOSTS = ['130.193.53.204', 'backend', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['178.154.194.63', 'backend', 'localhost', '127.0.0.1']
 
 
 # Application definition
