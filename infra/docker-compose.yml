@@ -25,7 +25,9 @@ services:
             - ./.env
     
     frontend:
-        image: zayan93/infra_frontend_2:latest
+        build:
+            context: ../frontend
+            dockerfile: Dockerfile
         volumes:
             - ../frontend:/app/result_build/
     
