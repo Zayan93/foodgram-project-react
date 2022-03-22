@@ -27,9 +27,7 @@ services:
     frontend:
         image: zayan93/infra_frontend_1:latest
         volumes:
-            - ../frontend/:/app/result_build/
-        depends_on:
-            - db
+            - ../frontend:/app/result_build/
     
     nginx:
         image: nginx:1.19.3
