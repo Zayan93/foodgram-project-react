@@ -33,3 +33,8 @@ DB_HOST=<db>
 DB_PORT=<5432>
 SECRET_KEY=<секретный ключ проекта django>
 
+
+На сервере соберите docker-compose:
+
+sudo docker-compose up -d --build
+
