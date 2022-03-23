@@ -8,6 +8,8 @@
 http://130.193.53.204 
 
 
+
+
 Подготовка и запуск проекта
 Склонировать репозиторий на локальную машину:
 git clone https://github.com/zayan93/foodgram-project-react
