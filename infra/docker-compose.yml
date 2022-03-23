@@ -25,7 +25,7 @@ services:
             - ./.env
     
     frontend:
-        image: zayan93/infra_frontend_2:latest
+        image: zayan93/infra_frontend_3:latest
         volumes:
             - ../frontend:/app/result_build/
         depends_on:
