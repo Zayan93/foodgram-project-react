@@ -42,16 +42,6 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
         model = IngredientAmount
         fields = ('amount', 'id')
 
-    def validate(self, data):
-        ingredients = self.initial_data.get('ingredients')
-        ingredient_list = []
-        for ingredient in ingredients:
-            if ingredient in ingredient_list:
-                raise serializers.ValidationError('Ингридиенты должны '
-                                                  'быть уникальными')
-            ingredient_list.append(ingredient)
-        return data
-
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = CurrentUserSerializer(read_only=True)
@@ -141,13 +131,23 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         IngredientAmount.objects.filter(recipe=instance).delete()
         self.create_bulk(instance, ingredients_data)
-        super().update(instance, validated_data)
+        instance.name = validated_data.pop('name')
+        instance.text = validated_data.pop('text')
+        instance.cooking_time = validated_data.pop('cooking_time')
+        if validated_data.get('image') is not None:
+            instance.image = validated_data.pop('image')
+        instance.save()
         instance.tags.set(tags_data)
         return instance
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
+        ingredient_list = []
         for ingredient in ingredients:
+            if ingredient in ingredient_list:
+                raise serializers.ValidationError('Ингридиенты должны '
+                                                  'быть уникальными')
+            ingredient_list.append(ingredient)
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError({
                     'ingredients': ('Число игредиентов должно быть больше 0')
