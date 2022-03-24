@@ -104,12 +104,6 @@ class IngredientAmount(models.Model):
     )
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'ingredient'],
-                name='unique_recipe_ingredient',
-            )
-        ]
         verbose_name = 'Количество'
 
     def __str__(self):
