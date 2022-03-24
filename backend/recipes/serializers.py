@@ -156,15 +156,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             )
         return data
 
-    def to_representation(self, instance):
-        data = RecipeSerializer(
-            instance,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
-        return data
-
 
 class FavoriteSerializer(serializers.ModelSerializer):
 
@@ -178,13 +169,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
                 message='Рецепт уже добавлен в избранное'
             )
         ]
-
-    def to_representation(self, instance):
-        requset = self.context.get('request')
-        return RecipeImageSerializer(
-            instance.recipe,
-            context={'request': requset}
-        ).data
 
 
 class ShoppingListSerializer(FavoriteSerializer):
