@@ -41,6 +41,16 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ('amount', 'id')
+    
+    def validate(self, data):
+        ingredients = self.initial_data.get('ingredients')
+        ingredient_list = []
+        for ingredient in ingredients:
+            if ingredient in ingredient_list:
+                raise serializers.ValidationError('Ингридиенты должны '
+                                                  'быть уникальными')
+            ingredient_list.append(ingredient)
+        return data
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -139,10 +149,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         ingredients = self.initial_data.get('ingredients')
         ingredient_list = []
         for ingredient in ingredients:
-            if ingredient in ingredient_list:
-                raise serializers.ValidationError('Ингридиенты должны '
-                                                  'быть уникальными')
-            ingredient_list.append(ingredient)
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError({
                     'ingredients': ('Число игредиентов должно быть больше 0')
@@ -155,6 +161,15 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Время приготовления должно быть больше 0'
             )
+        return data
+
+    def to_representation(self, instance):
+        data = RecipeSerializer(
+            instance,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data
         return data
 
 
