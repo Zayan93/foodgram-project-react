@@ -170,6 +170,10 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         instance.name = validated_data.pop('name')
         instance.text = validated_data.pop('text')
         instance.cooking_time = validated_data.pop('cooking_time')
+        for i in validated_data.get('ingredients'):
+            if i in ingredients_data:
+                raise serializers.ValidationError('Ингридиенты должны '
+                                                  'быть уникальными')
         if validated_data.get('image') is not None:
             instance.image = validated_data.pop('image')
         instance.save()
