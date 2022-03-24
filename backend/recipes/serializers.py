@@ -185,6 +185,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
             )
         ]
 
+    def to_representation(self, instance):
+        requset = self.context.get('request')
+        return RecipeImageSerializer(
+            instance.recipe,
+            context={'request': requset}
+        ).data
+
 
 class ShoppingListSerializer(FavoriteSerializer):
     class Meta(FavoriteSerializer.Meta):
