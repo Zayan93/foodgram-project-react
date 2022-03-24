@@ -118,6 +118,12 @@ class RecipeFullSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         ingredients_data = validated_data.pop('ingredients')
+        ingredient_list = []
+        for ingredient in ingredients_data:
+            if ingredient in ingredient_list:
+                raise serializers.ValidationError('Ингридиенты должны '
+                                                  'быть уникальными')
+            ingredient_list.append(ingredient)
         tags_data = validated_data.pop('tags')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.save()
@@ -134,31 +140,12 @@ class RecipeFullSerializer(serializers.ModelSerializer):
                 })
         return data
 
-    def validate_ingredients(self, data):
-        ingredients = self.initial_data.get('ingredients')
-        ingredient_list = []
-        for ingredient in ingredients:
-            if ingredient in ingredient_list:
-                raise serializers.ValidationError('Ингридиенты должны '
-                                                  'быть уникальными')
-            ingredient_list.append(ingredient)
-        return data
-
     def validate_cooking_time(self, data):
         cooking_time = self.initial_data.get('cooking_time')
         if int(cooking_time) <= 0:
             raise serializers.ValidationError(
                 'Время приготовления должно быть больше 0'
             )
-        return data
-
-    def to_representation(self, instance):
-        data = RecipeSerializer(
-            instance,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
         return data
 
     @transaction.atomic
@@ -175,6 +162,15 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         instance.save()
         instance.tags.set(tags_data)
         return instance
+
+    def to_representation(self, instance):
+        data = RecipeSerializer(
+            instance,
+            context={
+                'request': self.context.get('request')
+            }
+        ).data
+        return data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
