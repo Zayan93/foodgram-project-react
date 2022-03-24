@@ -19,12 +19,12 @@ User = get_user_model()
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = CurrentUserSerializer
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     @action(
         detail=False,
         methods=['get'],
-        permission_classes=(IsAuthenticated, )
+        permission_classes=[IsAuthenticated]
     )
     def me(self, request):
         serializer = self.get_serializer(self.request.user)
@@ -32,7 +32,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class FollowApiView(APIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, following_id):
         user = request.user
@@ -58,7 +58,7 @@ class FollowApiView(APIView):
 
 
 class FollowListApiView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated]
     serializer_class = FollowListSerializer
 
     def get_serializer_context(self):

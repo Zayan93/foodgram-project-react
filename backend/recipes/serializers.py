@@ -14,7 +14,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
@@ -31,6 +31,12 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=IngredientAmount.objects.all(),
+                fields=['ingredient', 'recipe']
+            )
+        ]
 
 
 class AddToIngredientAmountSerializer(serializers.ModelSerializer):
@@ -119,8 +125,7 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
-        recipe.save()
+        recipe = super().create(validated_data)
         recipe.tags.set(tags_data)
         self.create_bulk(recipe, ingredients_data)
         return recipe
@@ -131,12 +136,7 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags')
         IngredientAmount.objects.filter(recipe=instance).delete()
         self.create_bulk(instance, ingredients_data)
-        instance.name = validated_data.pop('name')
-        instance.text = validated_data.pop('text')
-        instance.cooking_time = validated_data.pop('cooking_time')
-        if validated_data.get('image') is not None:
-            instance.image = validated_data.pop('image')
-        instance.save()
+        super().update(instance, validated_data)
         instance.tags.set(tags_data)
         return instance
 
