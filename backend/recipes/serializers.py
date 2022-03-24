@@ -142,21 +142,16 @@ class RecipeFullSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
-        for ingredient in ingredients:
-            if int(ingredient['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'ingredients': ('Число игредиентов должно быть больше 0')
-                })
-        return data
-
-    def validate_ingredient(self, data):
-        ingredients = self.initial_data.get('ingredients')
         ingredient_list = []
         for ingredient in ingredients:
             if ingredient["name"] in ingredient_list:
                 raise serializers.ValidationError('Ингридиенты должны '
                                                   'быть уникальными')
             ingredient_list.append(ingredient["name"])
+            if int(ingredient['amount']) <= 0:
+                raise serializers.ValidationError({
+                    'ingredients': ('Число игредиентов должно быть больше 0')
+                })
         return data
 
     def validate_cooking_time(self, data):
