@@ -41,7 +41,7 @@ class AddToIngredientAmountSerializer(serializers.ModelSerializer):
     class Meta:
         model = IngredientAmount
         fields = ('amount', 'id')
-    
+
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
         ingredient_list = []
@@ -147,7 +147,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
-        ingredient_list = []
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError({
