@@ -120,10 +120,10 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         ingredients_data = validated_data.pop('ingredients')
         ingredient_list = []
         for ingredient in ingredients_data:
-            if ingredient in ingredient_list:
+            if ingredient["name"] in ingredient_list:
                 raise serializers.ValidationError('Ингридиенты должны '
                                                   'быть уникальными')
-            ingredient_list.append(ingredient)
+            ingredient_list.append(ingredient["name"])
         tags_data = validated_data.pop('tags')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.save()
@@ -162,15 +162,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         instance.save()
         instance.tags.set(tags_data)
         return instance
-
-    def to_representation(self, instance):
-        data = RecipeSerializer(
-            instance,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
-        return data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
