@@ -125,22 +125,16 @@ class RecipeFullSerializer(serializers.ModelSerializer):
         self.create_bulk(recipe, ingredients_data)
         return recipe
 
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop('ingredients')
-        tags_data = validated_data.pop('tags')
-        IngredientAmount.objects.filter(recipe=instance).delete()
-        self.create_bulk(instance, ingredients_data)
-        instance.name = validated_data.pop('name')
-        instance.text = validated_data.pop('text')
-        instance.cooking_time = validated_data.pop('cooking_time')
-        if validated_data.get('image') is not None:
-            instance.image = validated_data.pop('image')
-        instance.save()
-        instance.tags.set(tags_data)
-        return instance
-
     def validate(self, data):
+        ingredients = self.initial_data.get('ingredients')
+        for ingredient in ingredients:
+            if int(ingredient['amount']) <= 0:
+                raise serializers.ValidationError({
+                    'ingredients': ('Число игредиентов должно быть больше 0')
+                })
+        return data
+
+    def validate_ingredients(self, data):
         ingredients = self.initial_data.get('ingredients')
         ingredient_list = []
         for ingredient in ingredients:
@@ -148,10 +142,6 @@ class RecipeFullSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Ингридиенты должны '
                                                   'быть уникальными')
             ingredient_list.append(ingredient)
-            if int(ingredient['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'ingredients': ('Число игредиентов должно быть больше 0')
-                })
         return data
 
     def validate_cooking_time(self, data):
@@ -170,6 +160,21 @@ class RecipeFullSerializer(serializers.ModelSerializer):
             }
         ).data
         return data
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop('ingredients')
+        tags_data = validated_data.pop('tags')
+        IngredientAmount.objects.filter(recipe=instance).delete()
+        self.create_bulk(instance, ingredients_data)
+        instance.name = validated_data.pop('name')
+        instance.text = validated_data.pop('text')
+        instance.cooking_time = validated_data.pop('cooking_time')
+        if validated_data.get('image') is not None:
+            instance.image = validated_data.pop('image')
+        instance.save()
+        instance.tags.set(tags_data)
+        return instance
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
