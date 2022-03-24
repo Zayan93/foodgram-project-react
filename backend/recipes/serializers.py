@@ -2,7 +2,6 @@ from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from django.shortcuts import get_object_or_404
 
 from users.serializers import CurrentUserSerializer
 from tags.serializers import TagSerializer
