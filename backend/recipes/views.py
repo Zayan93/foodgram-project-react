@@ -18,9 +18,9 @@ from .serializers import (FavoriteSerializer, RecipeFullSerializer,
 
 class IngredientView(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
     queryset = Ingredient.objects.all()
-    filter_backends = [DjangoFilterBackend, ]
+    filter_backends = [DjangoFilterBackend]
     filter_class = IngredientFilter
     pagination_class = None
 
