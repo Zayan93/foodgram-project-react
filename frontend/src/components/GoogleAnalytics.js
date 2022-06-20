@@ -11,16 +11,18 @@ class GoogleAnalytics extends React.Components {
 
         if (history.action === 'PUSH' &&
             typeof(gtag) === 'function') {
-                gtag('config', 'UA-232449232-1', {
-                    'page_title': document.title,
-                    'page_location': window.location.href,
-                    'page_path': location.pathname
-                });
-            }
+            gtag('config', 'UA-232449232-1', {
+                'page_title': document.title,
+                'page_location': window.location.href,
+                'page_path': location.pathname
+            });
+        }
     }
 
-    render() {
+    render () {
         return null;
     }
 }
+
+export default withRouter(GoogleAnalytics)
 

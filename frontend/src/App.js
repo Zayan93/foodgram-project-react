@@ -3,11 +3,11 @@ import './App.css';
 import { Switch, Route, useHistory, Redirect, useLocation } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { Header, Footer, ProtectedRoute } from './components'
+import GoogleAnalytics from './components/GoogleAnalytics'
 import api from './api'
 import styles from './styles.module.css'
 import cn from 'classnames'
 import hamburgerImg from './images/hamburger-menu.png'
-import GoogleAnalytics from './components/GoogleAnalytics'
 
 import {
   Main,
