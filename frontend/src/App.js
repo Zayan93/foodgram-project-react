@@ -7,6 +7,7 @@ import api from './api'
 import styles from './styles.module.css'
 import cn from 'classnames'
 import hamburgerImg from './images/hamburger-menu.png'
+import GoogleAnalytics from './components/GoogleAnalytics'
 
 import {
   Main,
@@ -269,6 +270,7 @@ function App() {
         <Footer />
       </div>
     </UserContext.Provider>
+    <GoogleAnalytics />
   </AuthContext.Provider>
 }
 
